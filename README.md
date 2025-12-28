@@ -1,4 +1,9 @@
 ﻿# Cricket Score Prediction System
+ ![WhatsApp Image 2025-12-18 at 9 55 13 PM](https://github.com/user-attachments/assets/04a80da1-d022-4322-8c8a-5648e14fb9d0)
+ ![WhatsApp Image 2025-12-18 at 9 55 34 PM](https://github.com/user-attachments/assets/650fc729-2c8c-45a7-8d61-30b082678eab)
+ ![WhatsApp Image 2025-12-18 at 9 56 23 PM](https://github.com/user-attachments/assets/a10f50e7-5a4e-4551-aa7b-6442cffe32fa)
+
+
 
 ## 📋 Project Overview
 The **Cricket Score Prediction System** is an advanced machine learning application designed to forecast the final scores of cricket matches across multiple formats, including T20 International, One Day International (ODI), and Test matches. By analyzing current match variables—such as runs, wickets, overs, and historic match data—the system provides accurate, data-driven predictions in real-time.
@@ -46,7 +51,7 @@ python train_model.py
 ```bash
 python app.py
 ```
-Access the application dashboard at: `http://localhost:5000`
+Access the application dashboard at: `https://huggingface.co/spaces/Spidercraft01/cricket-score-predictor`
 
 ## 📊 Usage Guide
 1.  **Select Match Format**: Choose between T20, ODI, or Test match.
