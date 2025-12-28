@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="AI-powered Cricket Score Predictor for T20, ODI, and Test matches. Get accurate final score predictions using machine learning.">
+    <title>Cricket Score Predictor | All Formats - T20, ODI, Test</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <main class="main-content">
+        <div class="container">
+            <!-- Header -->
+            <header class="header animate-fade-in">
+                <div class="logo">
+                    <div class="logo-icon">🏏</div>
+                </div>
+                <h1 class="title">
+                    <span class="gradient-text">Cricket Score</span> Predictor
+                </h1>
+                <p class="subtitle">
+                    AI-powered predictions for T20, ODI & Test matches
+                </p>
+            </header>
+
+            <!-- Format Selector -->
+            <div class="format-selector animate-fade-in">
+                <button type="button" class="format-btn {% if not format or format == 'T20' %}active{% endif %}"
+                    data-format="T20" data-overs="20">
+                    🏆 T20
+                    <span class="format-overs">(20 overs)</span>
+                </button>
+                <button type="button" class="format-btn {% if format == 'ODI' %}active{% endif %}" data-format="ODI"
+                    data-overs="50">
+                    🌍 ODI
+                    <span class="format-overs">(50 overs)</span>
+                </button>
+                <button type="button" class="format-btn {% if format == 'TEST' %}active{% endif %}" data-format="TEST"
+                    data-overs="90">
+                    🎖️ Test
+                    <span class="format-overs">(per day)</span>
+                </button>
+            </div>
+
+            <!-- Main Card -->
+            <div class="card prediction-form animate-fade-in">
+                <!-- Format Info Badge -->
+                <div class="text-center mb-lg">
+                    <span class="format-info">
+                        📍 Playing: <span class="format-name" id="currentFormatDisplay">T20 International</span>
+                    </span>
+                </div>
+
+                <!-- Teams Display -->
+                <div class="teams-display">
+                    <div class="team-card batting">
+                        <span class="team-label">Batting</span>
+                        <img id="batting_team_image" class="team-image" src="" alt="Batting Team">
+                        <div class="team-name" id="batting_team_name">Select Team</div>
+                    </div>
+
+                    <div class="vs-badge">VS</div>
+
+                    <div class="team-card bowling">
+                        <span class="team-label">Bowling</span>
+                        <img id="bowling_team_image" class="team-image" src="" alt="Bowling Team">
+                        <div class="team-name" id="bowling_team_name">Select Team</div>
+                    </div>
+                </div>
+
+                <!-- Error Display -->
+                {% if error %}
+                <div class="error-card">
+                    <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="error-message">{{ error }}</span>
+                </div>
+                {% endif %}
+
+                <!-- Prediction Form -->
+                <form method="POST" id="predictionForm">
+                    <!-- Hidden format field -->
+                    <input type="hidden" name="format" id="formatInput" value="{{ form_data.get('format', 'T20') }}">
+
+                    <div class="form-grid">
+                        <!-- Batting Team -->
+                        <div class="form-group">
+                            <label class="form-label" for="batting_team">
+                                <span class="icon">🏏</span> Batting Team
+                            </label>
+                            <select class="form-control" name="batting_team" id="batting_team" required>
+                                <option value="">Select batting team</option>
+                                {% for team in teams %}
+                                <option value="{{ team }}" {% if form_data.get('batting_team')==team or (not form_data
+                                    and team=='India' ) %}selected{% endif %}>
+                                    {{ team }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Bowling Team -->
+                        <div class="form-group">
+                            <label class="form-label" for="bowling_team">
+                                <span class="icon">🎯</span> Bowling Team
+                            </label>
+                            <select class="form-control" name="bowling_team" id="bowling_team" required>
+                                <option value="">Select bowling team</option>
+                                {% for team in teams %}
+                                <option value="{{ team }}" {% if form_data.get('bowling_team')==team or (not form_data
+                                    and team=='Australia' ) %}selected{% endif %}>
+                                    {{ team }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- City -->
+                        <div class="form-group">
+                            <label class="form-label" for="city">
+                                <span class="icon">📍</span> Match Venue
+                            </label>
+                            <select class="form-control" name="city" id="city" required>
+                                <option value="">Select city</option>
+                                {% for city in cities %}
+                                <option value="{{ city }}" {% if form_data.get('city')==city %}selected{% endif %}>
+                                    {{ city }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Current Score -->
+                        <div class="form-group">
+                            <label class="form-label" for="current_score">
+                                <span class="icon">📊</span> Current Score
+                            </label>
+                            <input type="number" class="form-control" name="current_score" id="current_score"
+                                placeholder="e.g., 85" min="0" max="800"
+                                value="{{ form_data.get('current_score', '') }}" required>
+                        </div>
+
+                        <!-- Overs Done -->
+                        <div class="form-group">
+                            <label class="form-label" for="overs">
+                                <span class="icon">⚡</span> Overs Completed
+                                <span id="oversHint"
+                                    style="font-weight: normal; color: var(--text-light);">(5-20)</span>
+                            </label>
+                            <input type="number" class="form-control" name="overs" id="overs" placeholder="e.g., 10.3"
+                                step="0.1" min="5" max="20" value="{{ form_data.get('overs', '') }}" required>
+                        </div>
+
+                        <!-- Wickets Out -->
+                        <div class="form-group">
+                            <label class="form-label" for="wickets">
+                                <span class="icon">🎳</span> Wickets Fallen
+                            </label>
+                            <input type="number" class="form-control" name="wickets" id="wickets" placeholder="e.g., 2"
+                                min="0" max="9" value="{{ form_data.get('wickets', '') }}" required>
+                        </div>
+
+                        <!-- Last Five Overs -->
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label" for="last_five">
+                                <span class="icon">🔥</span> Runs Scored in Last 5 Overs
+                            </label>
+                            <input type="number" class="form-control" name="last_five" id="last_five"
+                                placeholder="e.g., 42" min="0" max="200" value="{{ form_data.get('last_five', '') }}"
+                                required>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">
+                        <span>🎯</span> Predict Final Score
+                    </button>
+                </form>
+
+                <!-- Prediction Result -->
+                {% if prediction %}
+                <div class="result-section">
+                    <div class="result-card">
+                        <div class="result-label">Predicted Final Score</div>
+                        <div class="result-score">{{ prediction }}</div>
+                        <div class="result-subtitle">runs expected at the end of innings</div>
+                        <span class="result-format">{{ format_name or 'T20' }} Match</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <p>Built with ❤️ using Machine Learning | Powered by XGBoost</p>
+            </footer>
+        </div>
+    </main>
+
+    <script>
+        // Format configurations
+        const formatConfigs = {
+            'T20': {
+                overs: 20,
+                minOvers: 5,
+                maxOvers: 20,
+                maxScore: 400,
+                name: 'T20 International'
+            },
+            'ODI': {
+                overs: 50,
+                minOvers: 10,
+                maxOvers: 50,
+                maxScore: 500,
+                name: 'One Day International'
+            },
+            'TEST': {
+                overs: 90,
+                minOvers: 20,
+                maxOvers: 90,
+                maxScore: 800,
+                name: 'Test Match'
+            }
+        };
+
+        let currentFormat = '{{ form_data.get("format", "T20") }}';
+
+        // Update format display and form validation
+        function updateFormat(format) {
+            currentFormat = format;
+            const config = formatConfigs[format];
+
+            // Update format input
+            document.getElementById('formatInput').value = format;
+
+            // Update display
+            document.getElementById('currentFormatDisplay').textContent = config.name;
+            document.getElementById('oversHint').textContent = `(${config.minOvers}-${config.maxOvers})`;
+
+            // Update overs input constraints
+            const oversInput = document.getElementById('overs');
+            oversInput.min = config.minOvers;
+            oversInput.max = config.maxOvers;
+            oversInput.placeholder = `e.g., ${Math.floor(config.overs / 2)}`;
+
+            // Update score max
+            document.getElementById('current_score').max = config.maxScore;
+
+            // Update active button
+            document.querySelectorAll('.format-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.format === format);
+            });
+        }
+
+        // Team image handling
+        function updateTeamImage(team, imageId, nameId) {
+            const imgElement = document.getElementById(imageId);
+            const nameElement = document.getElementById(nameId);
+
+            if (team) {
+                const imageName = team.toLowerCase().replace(/ /g, '_');
+                imgElement.src = `/static/images/${imageName}.png`;
+                imgElement.alt = team;
+                imgElement.onerror = function () {
+                    this.src = 'data:image/svg+xml,' + encodeURIComponent(`
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+                            <rect fill="#faf8f5" width="80" height="80" rx="12"/>
+                            <text x="40" y="45" text-anchor="middle" fill="#c9a962" font-size="24">🏏</text>
+                        </svg>
+                    `);
+                };
+                nameElement.textContent = team;
+            } else {
+                imgElement.src = '';
+                nameElement.textContent = 'Select Team';
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            const battingSelect = document.getElementById('batting_team');
+            const bowlingSelect = document.getElementById('bowling_team');
+
+            // Set initial format
+            updateFormat(currentFormat);
+
+            // Set initial images
+            updateTeamImage(battingSelect.value, 'batting_team_image', 'batting_team_name');
+            updateTeamImage(bowlingSelect.value, 'bowling_team_image', 'bowling_team_name');
+
+            // Update on change
+            battingSelect.addEventListener('change', function () {
+                updateTeamImage(this.value, 'batting_team_image', 'batting_team_name');
+            });
+
+            bowlingSelect.addEventListener('change', function () {
+                updateTeamImage(this.value, 'bowling_team_image', 'bowling_team_name');
+            });
+
+            // Format button handlers
+            document.querySelectorAll('.format-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    updateFormat(this.dataset.format);
+                });
+            });
+
+            // Form validation
+            const form = document.getElementById('predictionForm');
+            form.addEventListener('submit', function (e) {
+                const batting = battingSelect.value;
+                const bowling = bowlingSelect.value;
+
+                if (batting === bowling && batting !== '') {
+                    e.preventDefault();
+                    alert('Batting and bowling teams cannot be the same!');
+                    return false;
+                }
+
+                // Show loading overlay
+                document.getElementById('loadingOverlay').classList.add('active');
+            });
+
+            // Hide loading on page show
+            window.addEventListener('pageshow', function () {
+                document.getElementById('loadingOverlay').classList.remove('active');
+            });
+        });
+    </script>
+</body>
+
+</html>
