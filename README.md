@@ -1,37 +1,63 @@
-﻿# ≡ƒÅÅ Cricket Score Predictor
+﻿# Cricket Score Prediction System
 
-![WhatsApp Image 2025-12-18 at 9 55 13 PM](https://github.com/user-attachments/assets/16ca5370-9d15-4d9c-aaa4-b756943494ac)
+## 📋 Project Overview
+The **Cricket Score Prediction System** is an advanced machine learning application designed to forecast the final scores of cricket matches across multiple formats, including T20 International, One Day International (ODI), and Test matches. By analyzing current match variables—such as runs, wickets, overs, and historic match data—the system provides accurate, data-driven predictions in real-time.
 
-![WhatsApp Image 2025-12-18 at 9 55 34 PM](https://github.com/user-attachments/assets/9c28fad9-2d37-4d91-a9b8-6a3021ab87c7)
+Built with a sophisticated **XGBoost** regression model trained on extensive historical match datasets, this application serves as a powerful tool for cricket enthusiasts and analysts to gauge match outcomes with high precision.
 
-![WhatsApp Image 2025-12-18 at 9 56 23 PM](https://github.com/user-attachments/assets/f6e7ed32-9b7e-48ba-ae56-6c2666d42483)
+## ✨ Key Features
+*   **Multi-Format Support**: Seamless prediction capabilities for T20, ODI, and Test match formats.
+*   **Advanced ML Architecture**: Powered by XGBoost for superior predictive accuracy and performance.
+*   **Real-time Analysis**: Processes live match inputs (current score, wickets lost, overs bowled) to generate instant forecasts.
+*   **Context-Aware**: Factors in critical elements such as venue (city), batting team, and bowling team strength.
+*   **Premium User Interface**: Features a refined 'White Gold' aesthetic, offering a professional and engaging user experience.
 
+## 🛠️ Technology Stack
+*   **Backend Framework**: Flask (Python)
+*   **Machine Learning**: XGBoost, Scikit-learn, Pandas, NumPy
+*   **Frontend**: HTML5, CSS3 (Custom Styling)
+*   **Deployment**: Docker / Cloud Ready
 
+## 🚀 Installation & Setup
 
+### Prerequisites
+*   Python 3.8 or higher
+*   Git
 
-An AI-powered cricket score prediction app that predicts final scores for **T20, ODI, and Test** matches using machine learning.
-
-## Features
-- Predicts final score based on current match situation
-- Supports all three cricket formats (T20, ODI, Test)
-- Beautiful White Gold themed UI
-- Uses XGBoost ML model trained on real match data
-
-## How to Clone & Run
-
+### Step 1: Clone the Repository
 ```bash
-# Clone the repository
-git clone <repo-url>
-cd cricket_score_predictor
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Train the model (first time only)
-python train_model.py
-
-# Run the app
-python app.py
+git clone https://github.com/9mit/CRICKET_SCORE-PREDICTION-SYSTEM.git
+cd CRICKET_SCORE-PREDICTION-SYSTEM
 ```
 
-Then open **http://localhost:5000** in your browser.
+### Step 2: Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### Step 3: Model Initialization
+Before running the application for the first time, initialize the machine learning model:
+```bash
+python train_model.py
+```
+*Note: This will generate the `pipe.pkl` model file required for predictions.*
+
+### Step 4: Launch Application
+```bash
+python app.py
+```
+Access the application dashboard at: `http://localhost:5000`
+
+## 📊 Usage Guide
+1.  **Select Match Format**: Choose between T20, ODI, or Test match.
+2.  **Input Match Details**:
+    *   Select Batting and Bowling teams from the standardized list.
+    *   Choose the Host City.
+    *   Enter current match statistics (Current Score, Overs Done, Wickets Fallen, Runs in Last 5 Overs).
+3.  **Generate Prediction**: Click 'Predict Score' to receive the projected final total ranges.
+
+## 🤝 Contributing
+Contributions are welcome. Please ensure that pull requests include detailed descriptions of changes and maintain the existing coding standards.
+
+## 📄 License
+This project is licensed under the MIT License - see the LICENSE file for details.
